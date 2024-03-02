@@ -15,11 +15,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env: %s", err)
 	}
-	db.InitDBConnection()
+	db := db.InitDBConnection()
 	router := gin.Default()
 	users := router.Group("/users")
 	{
 		users.GET("/info", users_controllers.TestController)
+		users.POST("/register", func(c *gin.Context) {
+			users_controllers.RegisterUser(c, db.DB)
+		})
 	}
 
 	router.Run("localhost:8083")
