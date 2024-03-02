@@ -16,8 +16,8 @@ func init() {
 			hashed_pass VARCHAR(255) NOT NULL,
 			first_name VARCHAR(255),
 			last_name VARCHAR(255),
-			created_at TIMESTAMPTZ NOT NULL,
-			modified_at TIMESTAMPTZ NOT NULL
+			created_at TIMESTAMP NOT NULL,
+			modified_at TIMESTAMP
 		)`)
 		return err
 	}, func(db migrations.DB) error {
