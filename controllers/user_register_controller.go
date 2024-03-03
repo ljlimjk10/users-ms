@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-pg/pg/v10"
 	"github.com/ljlimjk10/users-ms/auth"
-	user_model "github.com/ljlimjk10/users-ms/models"
+	user_model "github.com/ljlimjk10/users-ms/models/user_models"
 )
 
 type RegisterUserPayload struct {
