@@ -12,7 +12,7 @@ func init() {
 		_, err := db.Exec(`CREATE TABLE roles(
 			role_id SERIAL PRIMARY KEY,
 			role_name VARCHAR(255) UNIQUE NOT NULL,
-			description VARCHAR(255) NOT NULL,
+			description VARCHAR(255) NOT NULL
 		)`)
 		return err
 	}, func(db migrations.DB) error {

@@ -13,7 +13,7 @@ func init() {
 			user_role_id SERIAL PRIMARY KEY,
 			user_id INT NOT NULL,
 			role_id INT NOT NULL,
-			CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+			CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
 			CONSTRAINT fk_role_id FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE
 		)`)
 		return err

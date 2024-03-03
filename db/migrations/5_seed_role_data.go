@@ -10,8 +10,8 @@ func init() {
 	migrations.MustRegisterTx(func(db migrations.DB) error {
 		fmt.Println("seeding roles...")
 		_, err := db.Exec(`INSERT INTO roles VALUES 
-			(1, "user", "gym user"),
-			(1, "admin", "gym administrator"),
+			(1, 'user', 'gym user'),
+			(2, 'admin', 'gym administrator')
 			`)
 		return err
 	}, func(db migrations.DB) error {
