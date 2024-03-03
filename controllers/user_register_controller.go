@@ -8,6 +8,7 @@ import (
 	"github.com/go-pg/pg/v10"
 	"github.com/ljlimjk10/users-ms/auth"
 	user_model "github.com/ljlimjk10/users-ms/models/user_models"
+	user_role_assoc_model "github.com/ljlimjk10/users-ms/models/user_role_assoc_models"
 )
 
 type RegisterUserPayload struct {
@@ -20,6 +21,7 @@ type RegisterUserPayload struct {
 
 func RegisterUser(c *gin.Context, db *pg.DB) {
 	var newUserPayload RegisterUserPayload
+
 	err := c.ShouldBindJSON(&newUserPayload)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -45,6 +47,16 @@ func RegisterUser(c *gin.Context, db *pg.DB) {
 
 	if err := user_model.CreateUser(db, newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
+		return
+	}
+
+	newUserRoleAssoc := &user_role_assoc_model.UserRoleAssociation{
+		UserID: newUser.UserID,
+		RoleID: 1,
+	}
+
+	if err := user_role_assoc_model.CreateUserRoleAssoc(db, newUserRoleAssoc); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user role"})
 		return
 	}
 
