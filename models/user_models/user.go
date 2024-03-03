@@ -9,7 +9,7 @@ import (
 type User struct {
 	tableName  struct{}  `pg:"users"`
 	UserID     int       `pg:"user_id, pk"`
-	Username   string    `pg:"username, notnull"`
+	Username   string    `pg:"username, unique, notnull"`
 	Email      string    `pg:"email, unique, notnull"`
 	HashedPass string    `pg:"hashed_pass, notnull"`
 	FirstName  string    `pg:"first_name"`
@@ -21,4 +21,13 @@ type User struct {
 func CreateUser(db *pg.DB, newUser *User) error {
 	_, err := db.Model(newUser).Insert()
 	return err
+}
+
+func GetUser(db *pg.DB, username string) (*User, error) {
+	user := new(User)
+	err := db.Model(user).Where("username = ?", username).Select()
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
