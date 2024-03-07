@@ -4,11 +4,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ljlimjk10/users-ms/auth"
+	"github.com/ljlimjk10/users-ms/models/user_models"
+	"github.com/ljlimjk10/users-ms/models/user_role_assoc_models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-pg/pg/v10"
-	"github.com/ljlimjk10/users-ms/auth"
-	user_model "github.com/ljlimjk10/users-ms/models/user_models"
-	user_role_assoc_model "github.com/ljlimjk10/users-ms/models/user_role_assoc_models"
 )
 
 type RegisterUserPayload struct {
@@ -35,7 +36,7 @@ func RegisterUser(c *gin.Context, db *pg.DB) {
 
 	currentTime := time.Now()
 
-	newUser := &user_model.User{
+	newUser := &user_models.User{
 		Username:   newUserPayload.Username,
 		Email:      newUserPayload.Email,
 		HashedPass: hashedPwd,
@@ -45,18 +46,19 @@ func RegisterUser(c *gin.Context, db *pg.DB) {
 		ModifiedAt: currentTime,
 	}
 
-	if err := user_model.CreateUser(db, newUser); err != nil {
+	// TODO: use tx instead of db in case of user role association creation failure
+	if err := user_models.CreateUser(db, newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
 		return
 	}
 
-	newUserRoleAssoc := &user_role_assoc_model.UserRoleAssociation{
+	newUserRoleAssoc := &user_role_assoc_models.UserRoleAssociation{
 		UserID: newUser.UserID,
 		RoleID: 1,
 	}
 
-	if err := user_role_assoc_model.CreateUserRoleAssoc(db, newUserRoleAssoc); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user role"})
+	if err := user_role_assoc_models.CreateUserRoleAssoc(db, newUserRoleAssoc); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user role association"})
 		return
 	}
 

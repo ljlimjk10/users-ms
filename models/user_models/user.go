@@ -31,3 +31,12 @@ func GetUser(db *pg.DB, username string) (*User, error) {
 	}
 	return user, nil
 }
+
+func GetAllUsers(db *pg.DB) ([]*User, error) {
+	var allUsers []*User
+	err := db.Model(&allUsers).Select()
+	if err != nil {
+		return nil, err
+	}
+	return allUsers, nil
+}
