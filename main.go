@@ -33,9 +33,9 @@ func main() {
 		users.GET("/user", jwtAuthService.JwtAuthMiddleware(), func(c *gin.Context) {
 			users_controllers.GetUser(c, db.DB)
 		})
-
+		users.GET("/validatejwt", jwtAuthService.JwtAuthMiddleware())
 	}
 
-	router.Run("localhost:8083")
+	router.Run("0.0.0.0:3005")
 
 }
