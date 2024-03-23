@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-pg/pg/v10"
 )
@@ -32,25 +33,34 @@ func InitDBConnection() *DBConnector {
 		},
 	}
 
-	pgOptions := &pg.Options{
-		User:     dbConnector.Options.User,
-		Database: dbConnector.Options.DB_Name,
-		Addr:     dbConnector.Options.Addr,
-		Password: dbConnector.Options.Password,
-	}
-	fmt.Println("Connecting to database.")
-	db := pg.Connect(pgOptions)
-	checkConnection(db)
-	dbConnector.DB = db
-	return dbConnector
+	maxRetries := 5
+	retryDelay := 5 * time.Second
 
-}
+	var db *pg.DB
+	var err error
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		fmt.Printf("Connecting to database (attempt %d of %d)...\n", attempt, maxRetries)
+		pgOptions := &pg.Options{
+			User:     dbConnector.Options.User,
+			Database: dbConnector.Options.DB_Name,
+			Addr:     dbConnector.Options.Addr,
+			Password: dbConnector.Options.Password,
+		}
+		db = pg.Connect(pgOptions)
+		_, err = db.Exec("SELECT 1")
+		if err == nil {
+			fmt.Println("Successfully connected to the database.")
+			dbConnector.DB = db
+			return dbConnector
+		}
 
-func checkConnection(db *pg.DB) {
-	_, err := db.Exec("SELECT 1")
-	if err != nil {
-		fmt.Println("Failed to connect to the database: ", err)
-		log.Fatal(err)
+		fmt.Printf("Failed to connect to the database: %v\n", err)
+		if attempt < maxRetries {
+			fmt.Printf("Retrying in %v...\n", retryDelay)
+			time.Sleep(retryDelay)
+		}
 	}
-	fmt.Println("Connected to database.")
+
+	log.Fatalf("Failed to connect to the database after %d attempts: %v", maxRetries, err)
+	return nil
 }
