@@ -59,7 +59,6 @@ func ExtractToken(c *gin.Context) string {
 }
 func (service *JwtService) TokenValidate(c *gin.Context) error {
 	jwtTokenStr := ExtractToken(c)
-	fmt.Println(jwtTokenStr)
 	token, err := jwt.ParseWithClaims(jwtTokenStr, &authCustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
